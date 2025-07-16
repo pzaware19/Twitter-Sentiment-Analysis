@@ -72,7 +72,7 @@ top_words <- tweet_words %>%count(word, sort = TRUE) %>%top_n(17) %>%
 TRUE ~ "Other"))                                          # words related to bjp and words related inc are grouped together for better visualisation purpose
                                                           # frequency of words appearing in the word df that i had created initially, I select top 17 words
 ggplot(top_words, aes(x = reorder(word, n), y = n, fill = party_color)) +
-  geom_col() +coord_flip() +scale_fill_manual(values = c("BJP" = "orange", "INC" = "blue", "Other" = "black")) +
+  geom_col() +coord_flip() +scale_fill_manual(values = c("BJP" = "orange", "INC" = "lightblue", "Other" = "black")) +
   labs(title = "Most Common Words in Political Tweets (2019)",x = NULL, y = "Frequency", fill = "Party"
   ) +
   theme_grey()                                           #plot having all BJP related things in orange and INC related things in blue after comments from instructor meeting
@@ -96,8 +96,9 @@ Using the Bing sentiment lexicon, I calculated daily sentiment scores—by subtr
 ```{r sentiment}
 sentiment_words <- tweet_words %>% inner_join(get_sentiments("bing"))      #using bing for sentiment analysis https://www.tidytextmining.com/sentiment, using inner join (referenced from penultimate class lecture or I was getting this wrong)
 sentiment_by_day <- sentiment_words %>% count(date, sentiment) %>% pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>% mutate(net_sentiment = positive - negative)                                    # counting the no of positve and negative words for each date. Formating wife data for each data to have its own positive and negative, fill any missing values with zero such that it will still appear. Add a new sentiment column: sentiment positive if move positive words, sentiment negative if more negative words
-ggplot(sentiment_by_day, aes(x = date, y = net_sentiment)) +
-  geom_line(color = "black") +
+ggplot(sentiment_by_day, aes(x = date, y = net_sentiment)) + 
+  geom_vline(xintercept = as.Date("2019-02-14"), linetype = "dashed", color = "red") + annotate("text", x = as.Date("2019-02-14"), y = 100, label = "Pulwama Attack", angle = 90, vjust = -0.6, size = 3) + geom_vline(xintercept = as.Date("2019-02-26"), linetype = "dashed", color = "red") + annotate("text", x = as.Date("2019-02-26"), y = 100, label = "Balakot Strikes", angle = 90, vjust = -0.6, size = 3) + geom_vline(xintercept = as.Date("2019-03-10"), linetype = "dashed", color = "red") + annotate("text", x = as.Date("2019-03-10"), y = 100, label = "Onset of elections", angle = 90, vjust = -0.6, size = 3) + geom_vline(xintercept = as.Date("2019-05-19"), linetype = "dashed", color = "red") + annotate("text", x = as.Date("2019-05-19"), y = 100, label = "End of polling", angle = 90, vjust = -0.6, size = 3) +
+  geom_line(color = "black") +                                             #these lines are added just to mark important dates with context to indian elections
   labs(title = "Daily Net Sentiment of Political Tweets",
        x = "Date", y = "Net Sentiment") +
   theme_grey()
@@ -111,12 +112,8 @@ To visualize sentiment-rich words, I generated a word cloud using terms matched 
 
 ```{r sentiment word cloud}
 wordcloud_data <- sentiment_words %>% count(word, sentiment, sort = TRUE)              #this counts the number of words in sentiment_words dataset grouping them by sentiments and then sorting it 
-wordcloud(words = wordcloud_data$word,                                                 #this code just creates the word cloud, the last line ensures that biggest words appear at the center than being scatter around
-          freq = wordcloud_data$n, 
-          min.freq = 30,
-          max.words = 100,
-          colors = c("black", "grey"),
-          random.order = FALSE)
+wordcloud(words = wordcloud_data$word,   #this code just creates the word cloud, the last line ensures that biggest words appear at the center than being scatter around
+ freq = wordcloud_data$n,  min.freq = 30, max.words = 100, colors = c("black", "grey"),random.order = FALSE)
 ```
 
 Words like support, win, shame, corruption, proud, lost appear bigger possibly as these are the most commonly used emotionally charged up words by political parties and leaders during election. We can see that highly polarized words like support, win, proud, respect, love, shame, corruption, defeat, scam, terrorism comprise the wordcloud suggesting it was highly polarized election seasion. 
@@ -182,7 +179,8 @@ ggplot(emotion_df, aes(x = reorder(party, -n), y = n, fill = sentiment)) +
 
 ## CONCLUSION
 
-Through this text analysis, I gained valuable insights into how different political parties shaped public discourse during the 2019 Indian General Elections. Although all parties used both positive and negative rhetoric, the tone, vocabulary, and emotional triggers varied. BJP appeared to lead in projecting positive sentiment and trust, while Congress and AAP emphasized critique and policy issues. These patterns reflect both top-down campaign messaging and bottom-up voter engagement. If I had more time, I would compare this dataset to offline speech transcripts or newspaper headlines to test whether the online discourse matched real-world narratives.
+Through this text analysis, I gained valuable insights into how different political parties shaped public discourse during the 2019 Indian General Elections. Although all parties used both positive and negative rhetoric, the tone, vocabulary, and emotional triggers varied. BJP appeared to lead in projecting positive sentiment and trust,while also their sample size in the twitter data was huge as compared to the other political parties suggesting widespread use of social media campaigning during the 2019 election campaign. 
+While Congress and AAP emphasized critique and policy issues. These patterns reflect both top-down campaign messaging and bottom-up voter engagement. If I had more time, I would compare this dataset to offline speech transcripts or newspaper headlines to test whether the online discourse matched real-world narratives.
 
 ## HELP LOGS
 
@@ -194,3 +192,5 @@ https://stackoverflow.com/questions/72498240/removing-stop-words-from-text-in-r
 https://www.tidytextmining.com/sentiment
 https://ggplot2.tidyverse.org/reference/ggtheme.html
 https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm
+https://en.wikipedia.org/wiki/2019_Balakot_airstrike
+https://en.wikipedia.org/wiki/2019_Pulwama_attack
