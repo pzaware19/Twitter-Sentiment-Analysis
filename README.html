@@ -253,7 +253,7 @@ tidy_tweets <- tweets %>%
 
 The party-wise sentiment analysis showed interesting contrasts. Tweets
 about the BJP contained slightly more positive sentiment compared to
-others—possibly reflecting successful outreach or high engagement from
+other, reflecting successful outreach or high engagement from
 supporters. On the other hand, tweets about the Congress and AAP parties
 had a more critical tone, with higher levels of negative sentiment. I
 interpreted this as evidence of an opposition-driven strategy that
