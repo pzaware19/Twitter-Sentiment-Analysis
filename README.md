@@ -60,10 +60,10 @@ on grammatical fillers.
 ``` r
 data("stop_words")   #tidytext package list of words, conjunctions, verbs and adverbs which are pretty redundunt in textual analysis. I got senser of this from https://stackoverflow.com/questions/72498240/removing-stop-words-from-text-in-r
 tweet_words <- tweets %>%
-  select(user, date, text) %>%     #only selecting the three columns 
-  unnest_tokens(word, text) %>%    #text column words take and split into smaller words, if tweet had 6 words it becomes 6 different rows
-  filter(!word %in% stop_words$word,      #removes filler words from word df
-         str_detect(word, "^[a-z']+$"))   #filters out numerics, symbols
+  select(user, date, text) %>%               # I have only selected user, date and text column
+  unnest_tokens(word, text) %>%              # convert the text into a format that is one word per row format for analysis
+  filter(str_detect(word, "^[a-z']+$")) %>%  
+  anti_join(stop_words, by = "word")   #remove out hashtags, numerical words and others using antijoin
 ```
 
 ## WORD FREQUENCY ANALYSIS
@@ -84,13 +84,15 @@ suggesting targeted narratives and ideological leanings. It also gave me
 a sense of who was pushing which messages more aggressively.
 
 ``` r
-top_words <- tweet_words %>% count(word, sort = TRUE) %>%top_n(17)
+top_words <- tweet_words %>%count(word, sort = TRUE) %>%top_n(17) %>%
+  mutate(party_color = case_when(word %in% c("bjp", "narendramodi", "modi") ~ "BJP",word %in% c("rahulgandhi", "incindia", "congress") ~ "INC",
+TRUE ~ "Other"))                                          # words related to bjp and words related inc are grouped together for better visualisation purpose
                                                           # frequency of words appearing in the word df that i had created initially, I select top 17 words
-ggplot(top_words, aes(x = reorder(word, n), y = n)) + geom_col(fill = "black") +
-  coord_flip() +
-  labs(title = "Most Common Words in Political Tweets (2019)",
-       x = NULL, y = "Frequency") +
-  theme_grey()
+ggplot(top_words, aes(x = reorder(word, n), y = n, fill = party_color)) +
+  geom_col() +coord_flip() +scale_fill_manual(values = c("BJP" = "orange", "INC" = "blue", "Other" = "black")) +
+  labs(title = "Most Common Words in Political Tweets (2019)",x = NULL, y = "Frequency", fill = "Party"
+  ) +
+  theme_grey()                                           #plot having all BJP related things in orange and INC related things in blue after comments from instructor meeting
 ```
 
 ![](README_files/figure-gfm/frequently%20used%20words-1.png)<!-- -->
@@ -246,7 +248,7 @@ tweets <- tweets %>% mutate(party = map_chr(text, detect_party)) %>%filter(party
 tidy_tweets <- tweets %>%
   unnest_tokens(word, text) %>%                     #break tweet into indiv words and then remove filler words and numbers, hashtags and punctuations
   anti_join(stop_words, by = "word") %>%
-  filter(str_detect(word, "^[a-z]+$"))
+  filter(str_detect(word, "^[a-z]+$"))              #filter out the hashtags, numerics which are not used in our study or analysis
 ```
 
 ## SENTIMENT BY PARTY
