@@ -35,7 +35,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 ## DATA DESCRIPTION
 
-The dataset I used consists of tweets [data]https://www.kaggle.com/datasets/yogesh239/twitter-data-about-2019-indian-general-election  during the election campaign window from January 1 to May 23, 2019. These tweets were extracted based on keywords, hashtags, and usernames linked to political parties and leaders. Each entry includes the tweet content, timestamp, and the Twitter handle of the user who posted it. To narrow the scope, I filtered the dataset to focus only on tweets from the official campaign period and removed tweets that were empty or improperly formatted.
+The dataset I used consists of tweets [data](https://www.kaggle.com/datasets/yogesh239/twitter-data-about-2019-indian-general-election)  during the election campaign window from January 1 to May 23, 2019. These tweets were extracted based on keywords, hashtags, and usernames linked to political parties and leaders. Each entry includes the tweet content, timestamp, and the Twitter handle of the user who posted it. To narrow the scope, I filtered the dataset to focus only on tweets from the official campaign period and removed tweets that were empty or improperly formatted.
 
 ```{r data importing and preprocessing, include=TRUE}
 tweets <- read_csv("IndianElection19TwitterData.csv")       #this dataset was downloaded from Kaggle https://www.kaggle.com/datasets/yogesh239/twitter-data-about-2019-indian-general-election

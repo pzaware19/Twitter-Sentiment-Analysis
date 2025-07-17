@@ -30,7 +30,7 @@ social media.
 ## DATA DESCRIPTION
 
 The dataset I used consists of tweets
-\[data\]<https://www.kaggle.com/datasets/yogesh239/twitter-data-about-2019-indian-general-election>
+[data](https://www.kaggle.com/datasets/yogesh239/twitter-data-about-2019-indian-general-election)
 during the election campaign window from January 1 to May 23, 2019.
 These tweets were extracted based on keywords, hashtags, and usernames
 linked to political parties and leaders. Each entry includes the tweet
