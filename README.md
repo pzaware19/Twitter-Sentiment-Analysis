@@ -29,13 +29,15 @@ social media.
 
 ## DATA DESCRIPTION
 
-The dataset I used consists of tweets collected during the election
-campaign window—from January 1 to May 23, 2019. These tweets were
-extracted based on keywords, hashtags, and usernames linked to political
-parties and leaders. Each entry includes the tweet content, timestamp,
-and the Twitter handle of the user who posted it. To narrow the scope, I
-filtered the dataset to focus only on tweets from the official campaign
-period and removed tweets that were empty or improperly formatted.
+The dataset I used consists of tweets
+\[data\]<https://www.kaggle.com/datasets/yogesh239/twitter-data-about-2019-indian-general-election>
+during the election campaign window from January 1 to May 23, 2019.
+These tweets were extracted based on keywords, hashtags, and usernames
+linked to political parties and leaders. Each entry includes the tweet
+content, timestamp, and the Twitter handle of the user who posted it. To
+narrow the scope, I filtered the dataset to focus only on tweets from
+the official campaign period and removed tweets that were empty or
+improperly formatted.
 
 ``` r
 tweets <- read_csv("IndianElection19TwitterData.csv")       #this dataset was downloaded from Kaggle https://www.kaggle.com/datasets/yogesh239/twitter-data-about-2019-indian-general-election
@@ -151,7 +153,7 @@ political narrative building.
 
 ## SENTIMENT TRAJECTORY
 
-Using the Bing sentiment lexicon, I calculated daily sentiment scores—by
+Using the Bing sentiment lexicon, I calculated daily sentiment scores by
 subtracting the number of negative words from positive ones. When I
 plotted these over time, I noticed spikes in both directions around
 mid-April and early May, which align with key phases of the election
@@ -308,17 +310,24 @@ real-world narratives.
 
 ## HELP LOGS
 
-In order to complete this project I was stuck with the problem of having
-way too many filler words and while attending the penultimate lecture I
-figureds stopwords out.  
+AI Help: I tried to get help from AI regarding generating a different
+shape of my word cloud but that did not help my case and I thought
+continuing with the basic shape would be the best In order to complete
+this project I was stuck with the problem of having way too many filler
+words and while attending the penultimate lecture I figureds stopwords
+out.  
 I tried using AI to help me with generating a different shape of the
 word cloud but I didnt implement it in this project. Kaggle was of great
-help as was stackoverflow
-<https://www.kaggle.com/datasets/yogesh239/twitter-data-about-2019-indian-general-election>
-<https://stackoverflow.com/questions/72498240/removing-stop-words-from-text-in-r>
-<https://www.tidytextmining.com/sentiment>
-<https://chatgpt.com/share/68782ef1-f428-8009-9eee-77ba34907e53>
-<https://ggplot2.tidyverse.org/reference/ggtheme.html>
-<https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm>
-<https://en.wikipedia.org/wiki/2019_Balakot_airstrike>
-<https://en.wikipedia.org/wiki/2019_Pulwama_attack>
+help as was stackoverflow. <br>
+
+1.  <https://www.kaggle.com/datasets/yogesh239/twitter-data-about-2019-indian-general-election>
+    <br>
+2.  <https://stackoverflow.com/questions/72498240/removing-stop-words-from-text-in-r>
+    <br>
+3.  <https://www.tidytextmining.com/sentiment> <br>
+4.  <https://chatgpt.com/share/68782ef1-f428-8009-9eee-77ba34907e53>
+    <br>
+5.  <https://ggplot2.tidyverse.org/reference/ggtheme.html> <br>
+6.  <https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm> <br>
+7.  <https://en.wikipedia.org/wiki/2019_Balakot_airstrike> <br>
+8.  <https://en.wikipedia.org/wiki/2019_Pulwama_attack> <br>

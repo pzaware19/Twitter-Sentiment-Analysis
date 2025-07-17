@@ -35,9 +35,9 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 ## DATA DESCRIPTION
 
-The dataset I used consists of tweets collected during the election campaign window—from January 1 to May 23, 2019. These tweets were extracted based on keywords, hashtags, and usernames linked to political parties and leaders. Each entry includes the tweet content, timestamp, and the Twitter handle of the user who posted it. To narrow the scope, I filtered the dataset to focus only on tweets from the official campaign period and removed tweets that were empty or improperly formatted.
+The dataset I used consists of tweets [data]https://www.kaggle.com/datasets/yogesh239/twitter-data-about-2019-indian-general-election  during the election campaign window from January 1 to May 23, 2019. These tweets were extracted based on keywords, hashtags, and usernames linked to political parties and leaders. Each entry includes the tweet content, timestamp, and the Twitter handle of the user who posted it. To narrow the scope, I filtered the dataset to focus only on tweets from the official campaign period and removed tweets that were empty or improperly formatted.
 
-```{r data importing and preprocessing}
+```{r data importing and preprocessing, include=TRUE}
 tweets <- read_csv("IndianElection19TwitterData.csv")       #this dataset was downloaded from Kaggle https://www.kaggle.com/datasets/yogesh239/twitter-data-about-2019-indian-general-election
 tweets <- tweets %>%
   rename(text = Tweet, timestamp = Date, user = User) %>%      #renaming some columns for better understanding, columns are tweet, date and user
@@ -51,7 +51,7 @@ tweets <- tweets %>%
 
 Before diving into the analysis, I cleaned the data to prepare it for text mining. I tokenized the tweets into individual words, converted them to lowercase, removed punctuation, and eliminated common stop words such as “the” or “and.” This preprocessing step allowed me to focus on politically meaningful words that reveal discourse patterns, rather than on grammatical fillers.
 
-```{r cleaning}
+```{r cleaning, include=TRUE}
 data("stop_words")   #tidytext package list of words, conjunctions, verbs and adverbs which are pretty redundunt in textual analysis. I got senser of this from https://stackoverflow.com/questions/72498240/removing-stop-words-from-text-in-r
 tweet_words <- tweets %>%
   select(user, date, text) %>%               # I have only selected user, date and text column
@@ -66,7 +66,7 @@ To begin, I identified the most common words across all tweets. As expected, nam
 
 To go beyond basic word frequency, I calculated TF-IDF scores to find unique words used by individual users. This technique helps spotlight the most distinctive words for each handle—whether political parties, media houses, or individuals. For instance, some users used words like “chowkidar,” “priyanka,” or “surgicalstrike” far more often than others, suggesting targeted narratives and ideological leanings. It also gave me a sense of who was pushing which messages more aggressively.
 
-```{r frequently used words}
+```{r frequently used words, include=TRUE}
 top_words <- tweet_words %>%count(word, sort = TRUE) %>%top_n(17) %>%
   mutate(party_color = case_when(word %in% c("bjp", "narendramodi", "modi") ~ "BJP",word %in% c("rahulgandhi", "incindia", "congress") ~ "INC",
 TRUE ~ "Other"))                                          # words related to bjp and words related inc are grouped together for better visualisation purpose
@@ -80,7 +80,7 @@ ggplot(top_words, aes(x = reorder(word, n), y = n, fill = party_color)) +
 
 Clearly from the above histogram plot it is inferrable that the word BJP which corresponds to the ruling party in India and the party that won a magnanimous mandate in 2019 was the most used word on twitter(now X) which is not a surprise given how they had shaped their entire campaign around social media tactics. Narendra Modi the then PM candidate comes second followed by the present leader opposition and the then Indian National Congress President Mr Rahul Gandhi. Out of the most requently used words one word that stands out to me was 'ji', while ji is a respectful address that is mostly used as a sufix to convey respect after your name e.g Rahul ji, Modi ji and hence this word although not so important appears in the list. Ideally this should have also been one of the stopwords but as it happens to be in Hindi this was not included in the tinytext package
 
-```{r tf-df_user}
+```{r tf-df_user, include=TRUE}
 user_tf_idf <- tweet_words %>%  count(user, word) %>%  bind_tf_idf(word, user, n) %>%  arrange(desc(tf_idf))    #numer of times a particular word was used by a user
 top_tf_idf <- user_tf_idf %>%  group_by(user) %>%  slice_max(tf_idf, n = 1) %>%
   ungroup()               #term frequency score for each word for each user, high tf-df means the word is frequent for particular user but rare for others
@@ -91,9 +91,9 @@ These are random twitter users,not someone who I think are famous or have a cele
 
 ## SENTIMENT TRAJECTORY
 
-Using the Bing sentiment lexicon, I calculated daily sentiment scores—by subtracting the number of negative words from positive ones. When I plotted these over time, I noticed spikes in both directions around mid-April and early May, which align with key phases of the election campaign. While there were brief sentiment surges, the overall tone remained relatively balanced across the period. This suggested to me that praise and criticism were flowing in almost equal measure during the campaign, possibly driven by debates, manifesto releases, and campaign rallies.
+Using the Bing sentiment lexicon, I calculated daily sentiment scores by subtracting the number of negative words from positive ones. When I plotted these over time, I noticed spikes in both directions around mid-April and early May, which align with key phases of the election campaign. While there were brief sentiment surges, the overall tone remained relatively balanced across the period. This suggested to me that praise and criticism were flowing in almost equal measure during the campaign, possibly driven by debates, manifesto releases, and campaign rallies.
 
-```{r sentiment}
+```{r sentiment, include=TRUE}
 sentiment_words <- tweet_words %>% inner_join(get_sentiments("bing"))      #using bing for sentiment analysis https://www.tidytextmining.com/sentiment, using inner join (referenced from penultimate class lecture or I was getting this wrong)
 sentiment_by_day <- sentiment_words %>% count(date, sentiment) %>% pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>% mutate(net_sentiment = positive - negative)                                    # counting the no of positve and negative words for each date. Formating wife data for each data to have its own positive and negative, fill any missing values with zero such that it will still appear. Add a new sentiment column: sentiment positive if move positive words, sentiment negative if more negative words
 ggplot(sentiment_by_day, aes(x = date, y = net_sentiment)) + 
@@ -110,7 +110,7 @@ Trends in the sentiment show that during January it starts out fairly negative, 
 
 To visualize sentiment-rich words, I generated a word cloud using terms matched to either positive or negative sentiment. Words like “development,” “trust,” and “victory” stood out on the positive side, while “lies,” “corrupt,” and “scam” featured among the negative. This mix of aspirational and accusatory language felt typical of high-stakes electoral contests, especially in India’s charged political climate.
 
-```{r sentiment word cloud}
+```{r sentiment word cloud, include=TRUE}
 wordcloud_data <- sentiment_words %>% count(word, sentiment, sort = TRUE)              #this counts the number of words in sentiment_words dataset grouping them by sentiments and then sorting it 
 wordcloud(words = wordcloud_data$word,   #this code just creates the word cloud, the last line ensures that biggest words appear at the center than being scatter around
  freq = wordcloud_data$n,  min.freq = 30, max.words = 100, colors = c("black", "grey"),random.order = FALSE)
@@ -118,7 +118,7 @@ wordcloud(words = wordcloud_data$word,   #this code just creates the word cloud,
 
 Words like support, win, shame, corruption, proud, lost appear bigger possibly as these are the most commonly used emotionally charged up words by political parties and leaders during election. We can see that highly polarized words like support, win, proud, respect, love, shame, corruption, defeat, scam, terrorism comprise the wordcloud suggesting it was highly polarized election seasion. 
 
-```{r second project fun}
+```{r second project fun, include=TRUE}
 nrc <- get_sentiments("nrc")
 bing <- get_sentiments("bing")
 ```
@@ -127,7 +127,7 @@ bing <- get_sentiments("bing")
 
 To better compare patterns, I assigned tweets to major political parties based on keyword mentions (like “Modi” for BJP or “Rahul Gandhi” for INC). This classification enabled me to break down sentiment and emotional tones by party. I filtered out tweets without clear party references to maintain clarity in comparison.
 
-```{r partywise}
+```{r partywise, include=TRUE}
 party_patterns <- list(
   BJP   = c("@BJP4India", "\\bBJP\\b", "Modi", "Narendra Modi"),
   INC   = c("@INCIndia", "\\bCongress\\b", "Rahul Gandhi", "@RahulGandhi"),
@@ -183,15 +183,16 @@ Through this text analysis, I gained valuable insights into how different politi
 While Congress and AAP emphasized critique and policy issues. These patterns reflect both top-down campaign messaging and bottom-up voter engagement. If I had more time, I would compare this dataset to offline speech transcripts or newspaper headlines to test whether the online discourse matched real-world narratives.
 
 ## HELP LOGS
-
+AI Help: I tried to get help from AI regarding generating a different shape of my word cloud but that did not help my case and I thought continuing with the basic shape would be the best
 In order to complete this project I was stuck with the problem of having way too many filler words and while attending the penultimate lecture I figureds stopwords out.  
 I tried using AI to help me with generating a different shape of the word cloud but I didnt implement it in this project. 
-Kaggle was of great help as was stackoverflow
-https://www.kaggle.com/datasets/yogesh239/twitter-data-about-2019-indian-general-election
-https://stackoverflow.com/questions/72498240/removing-stop-words-from-text-in-r
-https://www.tidytextmining.com/sentiment
-https://chatgpt.com/share/68782ef1-f428-8009-9eee-77ba34907e53
-https://ggplot2.tidyverse.org/reference/ggtheme.html
-https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm
-https://en.wikipedia.org/wiki/2019_Balakot_airstrike
-https://en.wikipedia.org/wiki/2019_Pulwama_attack
+Kaggle was of great help as was stackoverflow. <br>
+
+1. https://www.kaggle.com/datasets/yogesh239/twitter-data-about-2019-indian-general-election <br>
+2. https://stackoverflow.com/questions/72498240/removing-stop-words-from-text-in-r <br>
+3. https://www.tidytextmining.com/sentiment <br>
+4. https://chatgpt.com/share/68782ef1-f428-8009-9eee-77ba34907e53 <br>
+5. https://ggplot2.tidyverse.org/reference/ggtheme.html <br>
+6. https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm <br>
+7. https://en.wikipedia.org/wiki/2019_Balakot_airstrike <br>
+8. https://en.wikipedia.org/wiki/2019_Pulwama_attack <br>
