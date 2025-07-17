@@ -190,6 +190,7 @@ Kaggle was of great help as was stackoverflow
 https://www.kaggle.com/datasets/yogesh239/twitter-data-about-2019-indian-general-election
 https://stackoverflow.com/questions/72498240/removing-stop-words-from-text-in-r
 https://www.tidytextmining.com/sentiment
+https://chatgpt.com/share/68782ef1-f428-8009-9eee-77ba34907e53
 https://ggplot2.tidyverse.org/reference/ggtheme.html
 https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm
 https://en.wikipedia.org/wiki/2019_Balakot_airstrike
