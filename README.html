@@ -42,7 +42,7 @@ improperly formatted.
 ``` r
 tweets <- read_csv("IndianElection19TwitterData.csv")       #this dataset was downloaded from Kaggle https://www.kaggle.com/datasets/yogesh239/twitter-data-about-2019-indian-general-election
 tweets <- tweets %>%
-  rename(text = Tweet, timestamp = Date, user = User) %>%      #renaming some columns for better understanding, columns are tweet, date and user
+  rename(text = Tweet, timestamp = Date, user = User) %>%   #renaming some columns for better understanding, columns are tweet, date and user
   mutate(timestamp = as.POSIXct(timestamp, format = "%Y-%m-%d %H:%M:%S"),
          date = as.Date(timestamp)) %>%                        #drops time stamping from the date part and only keeps the dates
   filter(date >= as.Date("2019-01-01") & date <= as.Date("2019-05-23")) %>%
@@ -72,7 +72,7 @@ tweet_words <- tweets %>%
 
 To begin, I identified the most common words across all tweets. As
 expected, names like “modi,” “rahul,” “bjp,” “vote,” and “congress”
-topped the list. These high-frequency words confirm the dataset’s strong
+topped the list. These high frequency words confirm the dataset’s strong
 political focus and show how central party figures were to the online
 discussion. It also reflects the dominance of national issues and
 personalities in voters’ minds during the campaign.
@@ -94,7 +94,7 @@ ggplot(top_words, aes(x = reorder(word, n), y = n, fill = party_color)) +
   geom_col() +coord_flip() +scale_fill_manual(values = c("BJP" = "orange", "INC" = "lightblue", "Other" = "black")) +
   labs(title = "Most Common Words in Political Tweets (2019)",x = NULL, y = "Frequency", fill = "Party"
   ) +
-  theme_grey()                                           #plot having all BJP related things in orange and INC related things in blue after comments from instructor meeting
+  theme_grey()        #plot having all BJP related things in orange and INC related things in blue after comments from instructor meeting
 ```
 
 ![](README_files/figure-gfm/frequently%20used%20words-1.png)<!-- -->
@@ -155,8 +155,8 @@ political narrative building.
 
 Using the Bing sentiment lexicon, I calculated daily sentiment scores by
 subtracting the number of negative words from positive ones. When I
-plotted these over time, I noticed spikes in both directions around
-mid-April and early May, which align with key phases of the election
+plotted these over time, I noticed spikes in both directions around mid
+April and early May, which align with key phases of the election
 campaign. While there were brief sentiment surges, the overall tone
 remained relatively balanced across the period. This suggested to me
 that praise and criticism were flowing in almost equal measure during
@@ -192,11 +192,11 @@ and leaders from both the sides.
 
 ## SENTIMENT WORD CLOUD
 
-To visualize sentiment-rich words, I generated a word cloud using terms
+To visualize sentiment rich words, I generated a word cloud using terms
 matched to either positive or negative sentiment. Words like
 “development,” “trust,” and “victory” stood out on the positive side,
 while “lies,” “corrupt,” and “scam” featured among the negative. This
-mix of aspirational and accusatory language felt typical of high-stakes
+mix of aspirational and accusatory language felt typical of high stakes
 electoral contests, especially in India’s charged political climate.
 
 ``` r
@@ -252,12 +252,12 @@ tidy_tweets <- tweets %>%
 
 ## SENTIMENT BY PARTY
 
-The party-wise sentiment analysis showed interesting contrasts. Tweets
+The party wise sentiment analysis showed interesting contrasts. Tweets
 about the BJP contained slightly more positive sentiment compared to
 other, reflecting successful outreach or high engagement from
 supporters. On the other hand, tweets about the Congress and AAP parties
 had a more critical tone, with higher levels of negative sentiment. I
-interpreted this as evidence of an opposition-driven strategy that
+interpreted this as evidence of an opposition driven strategy that
 emphasized critique rather than celebration.
 
 ``` r
@@ -274,8 +274,8 @@ ggplot(sentiment_bing, aes(x = reorder(party, -n), y = n, fill = sentiment)) + g
 
 ## EMOTIONAL BREAKDOWN
 
-Using the NRC lexicon, I categorized emotion-related words (e.g., joy,
-anger, fear, trust). BJP-related tweets leaned more heavily into
+Using the NRC lexicon, I categorized emotion related words (e.g., joy,
+anger, fear, trust). BJP related tweets leaned more heavily into
 emotions like “joy” and “trust,” while INC and TMC were more frequently
 associated with “anger” and “fear.” This variation may reflect differing
 campaign tactics—BJP projecting confidence and momentum, while the
@@ -302,11 +302,11 @@ BJP appeared to lead in projecting positive sentiment and trust,while
 also their sample size in the twitter data was huge as compared to the
 other political parties suggesting widespread use of social media
 campaigning during the 2019 election campaign. While Congress and AAP
-emphasized critique and policy issues. These patterns reflect both
-top-down campaign messaging and bottom-up voter engagement. If I had
-more time, I would compare this dataset to offline speech transcripts or
-newspaper headlines to test whether the online discourse matched
-real-world narratives.
+emphasized critique and policy issues. These patterns reflect both top
+down campaign messaging and bottom up voter engagement. If I had more
+time, I would compare this dataset to offline speech transcripts or
+newspaper headlines to test whether the online discourse matched real
+world narratives.
 
 ## HELP LOGS
 
