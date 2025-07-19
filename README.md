@@ -54,7 +54,7 @@ tweet_words <- tweets %>%
   select(user, date, text) %>%               # I have only selected user, date and text column
   unnest_tokens(word, text) %>%              # convert the text into a format that is one word per row format for analysis
   filter(str_detect(word, "^#?[A-Za-z0-9]+$"))%>%  
-  anti_join(stop_words, by = "word")  #it includes hashtags words like bjp4india abut excludes some words like #Go_vote, @user, covid-19
+  anti_join(stop_words, by = "word")   #remove out filler words 
 ```
 
 ## WORD FREQUENCY ANALYSIS
