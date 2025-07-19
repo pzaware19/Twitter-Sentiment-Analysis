@@ -39,17 +39,6 @@ narrow the scope, I filtered the dataset to focus only on tweets from
 the official campaign period and removed tweets that were empty or
 improperly formatted.
 
-``` r
-tweets <- read_csv("IndianElection19TwitterData.csv")       #this dataset was downloaded from Kaggle https://www.kaggle.com/datasets/yogesh239/twitter-data-about-2019-indian-general-election
-tweets <- tweets %>%
-  rename(text = Tweet, timestamp = Date, user = User) %>%   #renaming some columns for better understanding, columns are tweet, date and user
-  mutate(timestamp = as.POSIXct(timestamp, format = "%Y-%m-%d %H:%M:%S"),
-         date = as.Date(timestamp)) %>%                        #drops time stamping from the date part and only keeps the dates
-  filter(date >= as.Date("2019-01-01") & date <= as.Date("2019-05-23")) %>%
-  drop_na(text)     #only select tweets that I have selected in my timeline
-                    #dropping blank columns which have no text
-```
-
 ## DATA CLEANING AND PREPROCESSING
 
 Before diving into the analysis, I cleaned the data to prepare it for
@@ -64,8 +53,8 @@ data("stop_words")   #tidytext package list of words, conjunctions, verbs and ad
 tweet_words <- tweets %>%
   select(user, date, text) %>%               # I have only selected user, date and text column
   unnest_tokens(word, text) %>%              # convert the text into a format that is one word per row format for analysis
-  filter(str_detect(word, "^[a-z']+$")) %>%  
-  anti_join(stop_words, by = "word")   #remove out hashtags, numerical words and others using antijoin
+  filter(str_detect(word, "^#?[A-Za-z0-9]+$"))%>%  
+  anti_join(stop_words, by = "word")  #it includes hashtags words like bjp4india abut excludes some words like #Go_vote, @user, covid-19
 ```
 
 ## WORD FREQUENCY ANALYSIS
@@ -123,23 +112,23 @@ head(top_tf_idf, 17)
     ## # A tibble: 17 × 6
     ##    user            word                       n     tf   idf tf_idf
     ##    <chr>           <chr>                  <int>  <dbl> <dbl>  <dbl>
-    ##  1 0007_CJ         cows                       3 0.111   7.07  0.786
-    ##  2 001_chandan     chandnichowk               1 0.05    8.50  0.425
-    ##  3 001amitsingh    sudhanshubjp               2 0.1    10.8   1.08 
+    ##  1 0007_CJ         cows                       3 0.103   7.07  0.731
+    ##  2 001_chandan     polls2019                  1 0.0455  8.73  0.397
+    ##  3 001amitsingh    sudhanshubjp               2 0.0870 10.8   0.940
     ##  4 001ankitG       abhinandan                 1 0.5     4.71  2.36 
     ##  5 002_akash       answerable                 1 0.0909  7.41  0.673
-    ##  6 004Pruth        pass                       2 0.1     5.48  0.548
-    ##  7 0062a04e1ceb458 scale                      1 0.143   6.24  0.892
+    ##  6 004Pruth        pass                       2 0.0833  5.48  0.457
+    ##  7 0062a04e1ceb458 scale                      1 0.0909  6.24  0.568
     ##  8 007Bhas         aamaadmi                   1 0.0455  8.73  0.397
-    ##  9 007Fahadkhan    electioncommission         1 0.333   3.45  1.15 
-    ## 10 007__AK         opposit                    1 0.0714 10.8   0.772
-    ## 11 007_hemal       trusted                    2 0.0625  6.63  0.415
+    ##  9 007Fahadkhan    electioncommission         1 0.25    3.45  0.862
+    ## 10 007__AK         opposit                    1 0.0667 10.8   0.721
+    ## 11 007_hemal       trusted                    2 0.0588  6.63  0.390
     ## 12 007_joshh       supports                   2 0.0345  5.44  0.188
-    ## 13 007_vasu        unitedpakistanalliance     1 0.0208 10.8   0.225
-    ## 14 007dibs         depends                    1 0.0909  6.43  0.584
-    ## 15 007shekharsuman jaipur                     1 0.0588  6.59  0.388
+    ## 13 007_vasu        unitedpakistanalliance     1 0.0204 10.8   0.221
+    ## 14 007dibs         depends                    1 0.0833  6.43  0.535
+    ## 15 007shekharsuman jaipur                     1 0.0625  6.59  0.412
     ## 16 007vidyadhar    sakhshimaharaj             1 0.143  10.8   1.54 
-    ## 17 0099Swami       prestigious                1 0.0625  7.20  0.450
+    ## 17 0099Swami       prestigious                1 0.0588  7.20  0.423
 
 These are random twitter users,not someone who I think are famous or
 have a celebrity status. Fir 001amitsingh, word sudhanshubjp has a high
@@ -165,7 +154,7 @@ campaign rallies.
 
 ``` r
 sentiment_words <- tweet_words %>% inner_join(get_sentiments("bing"))      #using bing for sentiment analysis https://www.tidytextmining.com/sentiment, using inner join (referenced from penultimate class lecture or I was getting this wrong)
-sentiment_by_day <- sentiment_words %>% count(date, sentiment) %>% pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>% mutate(net_sentiment = positive - negative)                                    # counting the no of positve and negative words for each date. Formating wife data for each data to have its own positive and negative, fill any missing values with zero such that it will still appear. Add a new sentiment column: sentiment positive if move positive words, sentiment negative if more negative words
+sentiment_by_day <- sentiment_words %>% count(date, sentiment) %>% pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>% mutate(net_sentiment = positive - negative)                                    # counting the no of positve and negative words for each date. Formatingdata for each data to have its own positive and negative, fill any missing values with zero such that it will still appear. Add a new sentiment column: sentiment positive if move positive words, sentiment negative if more negative words
 ggplot(sentiment_by_day, aes(x = date, y = net_sentiment)) + 
   geom_vline(xintercept = as.Date("2019-02-14"), linetype = "dashed", color = "red") + annotate("text", x = as.Date("2019-02-14"), y = 100, label = "Pulwama Attack", angle = 90, vjust = -0.6, size = 3) + geom_vline(xintercept = as.Date("2019-02-26"), linetype = "dashed", color = "red") + annotate("text", x = as.Date("2019-02-26"), y = 100, label = "Balakot Strikes", angle = 90, vjust = -0.6, size = 3) + geom_vline(xintercept = as.Date("2019-03-10"), linetype = "dashed", color = "red") + annotate("text", x = as.Date("2019-03-10"), y = 100, label = "Onset of elections", angle = 90, vjust = -0.6, size = 3) + geom_vline(xintercept = as.Date("2019-05-19"), linetype = "dashed", color = "red") + annotate("text", x = as.Date("2019-05-19"), y = 100, label = "End of polling", angle = 90, vjust = -0.6, size = 3) +
   geom_line(color = "black") +                                             #these lines are added just to mark important dates with context to indian elections
@@ -200,7 +189,7 @@ mix of aspirational and accusatory language felt typical of high stakes
 electoral contests, especially in India’s charged political climate.
 
 ``` r
-wordcloud_data <- sentiment_words %>% count(word, sentiment, sort = TRUE)              #this counts the number of words in sentiment_words dataset grouping them by sentiments and then sorting it 
+wordcloud_data <- sentiment_words %>% count(word, sentiment, sort = TRUE) #this counts the number of words in sentiment_words dataset grouping them by sentiments and then sorting it 
 wordcloud(words = wordcloud_data$word,   #this code just creates the word cloud, the last line ensures that biggest words appear at the center than being scatter around
  freq = wordcloud_data$n,  min.freq = 30, max.words = 100, colors = c("black", "grey"),random.order = FALSE)
 ```
@@ -235,19 +224,17 @@ party_patterns <- list(
   TMC   = c("@AITCofficial", "\\bTMC\\b", "Mamata Banerjee"),
   CPIM  = c("@cpimspeak", "@cpofindia", "\\bCPI\\b", "\\bCPIM\\b"),
   SP    = c("@samajwadiparty", "Akhilesh Yadav", "\\bSP\\b")
-)  #these are some party specific keywords or twitter handles that I thought would be relevant given my knowledge of Indian Politics
+)  #these are some party specific keywords or twitter handles that I thought would be relevant given my limited knowledge of Indian Politics
 
-detect_party <- function(tweet) { for (party in names(party_patterns)) { if (any(str_detect(tweet, regex(party_patterns[[party]], ignore_case = TRUE)))) { return(party) } }
+detect_party <- function(tweet) { for (party in names(party_patterns)) { if (any(str_detect(tweet, regex(party_patterns[[party]], ignore_case = TRUE)))) { return(party) } } #this is a party helper function that goes and loops through each tweet and checks whether any of the party specific patterns that I mentioned above show in the then
   return("Other")
 }
-                #this is a party helper function that goes and loops through each tweet and checks whether any of the party specific patterns that I mentioned above show in the then
-
 tweets <- tweets %>% mutate(party = map_chr(text, detect_party)) %>%filter(party != "Other")   #function to each tweet and add a new parrty column, filter out tweets that have no parties mentioned especially the ones I have mentioned in the code above
-
 tidy_tweets <- tweets %>%
   unnest_tokens(word, text) %>%                     #break tweet into indiv words and then remove filler words and numbers, hashtags and punctuations
   anti_join(stop_words, by = "word") %>%
-  filter(str_detect(word, "^[a-z]+$"))              #filter out the hashtags, numerics which are not used in our study or analysis
+  filter(str_detect(word, "^#?[A-Za-z0-9]+$"))
+             #it includes hashtags words like bjp4india abut excludes some words like #Go_vote, @user, covid-19
 ```
 
 ## SENTIMENT BY PARTY
@@ -316,9 +303,7 @@ continuing with the basic shape would be the best In order to complete
 this project I was stuck with the problem of having way too many filler
 words and while attending the penultimate lecture I figureds stopwords
 out.  
-I tried using AI to help me with generating a different shape of the
-word cloud but I didnt implement it in this project. Kaggle was of great
-help as was stackoverflow. <br>
+Kaggle was of great help as was stackoverflow. <br>
 
 1.  <https://www.kaggle.com/datasets/yogesh239/twitter-data-about-2019-indian-general-election>
     <br>
