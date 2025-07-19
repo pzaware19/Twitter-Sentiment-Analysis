@@ -248,7 +248,7 @@ interpreted this as evidence of an opposition driven strategy that
 emphasized critique rather than celebration.
 
 ``` r
-sentiment_bing <- tidy_tweets %>%
+sentiment_bing <- tidy_tweets %>% 
   select(word, party) %>%          
   inner_join(bing, by = "word") %>%
   count(party, sentiment, sort = TRUE)    # joining tidytweets dataset with bing sentient lexicon, labelling words as positive or negative 
@@ -305,27 +305,22 @@ words and while attending the penultimate lecture I figureds stopwords
 out.  
 Kaggle was of great help as was stackoverflow. <br>
 
-1.  <https://www.kaggle.com/datasets/yogesh239/twitter-data-about-2019-indian-general-election>
+1.  <https://www.kaggle.com/datasets/yogesh239/twitter-data-about-2019-indian-general-election><br>
+2.  <https://stackoverflow.com/questions/72498240/removing-stop-words-from-text-in-r><br>
+3.  <https://www.tidytextmining.com/sentiment><br>
+4.  <https://chatgpt.com/share/68782ef1-f428-8009-9eee-77ba34907e53><br>
+5.  <https://ggplot2.tidyverse.org/reference/ggtheme.html><br>
+6.  <https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm><br>
+7.  <https://en.wikipedia.org/wiki/2019_Balakot_airstrike><br>
+8.  <https://en.wikipedia.org/wiki/2019_Pulwama_attack><br>
+9.  <https://stackoverflow.com/questions/70642322/how-to-use-mutate-function-in-r><br>
+10. <https://stackoverflow.com/questions/58216384/issue-with-filtering-within-a-function-in-r>
     <br>
-2.  <https://stackoverflow.com/questions/72498240/removing-stop-words-from-text-in-r>
+11. <https://stackoverflow.com/questions/60855101/calculate-tf-idf-for-a-data-frame-of-documents>
     <br>
-3.  <https://www.tidytextmining.com/sentiment> <br>
-4.  <https://chatgpt.com/share/68782ef1-f428-8009-9eee-77ba34907e53>
+12. <https://stackoverflow.com/questions/72498240/removing-stop-words-from-text-in-r>
     <br>
-5.  <https://ggplot2.tidyverse.org/reference/ggtheme.html> <br>
-6.  <https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm> <br>
-7.  <https://en.wikipedia.org/wiki/2019_Balakot_airstrike> <br>
-8.  <https://en.wikipedia.org/wiki/2019_Pulwama_attack> <br>
-9.  <https://stackoverflow.com/questions/70642322/how-to-use-mutate-function-in-r>
-    <br>
-    10.<https://stackoverflow.com/questions/58216384/issue-with-filtering-within-a-function-in-r>
-    <br>
-    11.<https://stackoverflow.com/questions/60855101/calculate-tf-idf-for-a-data-frame-of-documents>
-    <br>
-    12.<https://stackoverflow.com/questions/72498240/removing-stop-words-from-text-in-r>
-    <br>
-    13.<https://juliasilge.github.io/tidytext/reference/unnest_tokens.html>
-    <br>
-    14.<https://stackoverflow.com/questions/75911170/select-function-in-r>
-10. <https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf>
+13. <https://juliasilge.github.io/tidytext/reference/unnest_tokens.html><br>
+14. <https://stackoverflow.com/questions/75911170/select-function-in-r><br>
+15. <https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf>
     <br>
