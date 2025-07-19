@@ -140,8 +140,8 @@ party_patterns <- list(
 detect_party <- function(tweet) { for (party in names(party_patterns)) { if (any(str_detect(tweet, regex(party_patterns[[party]], ignore_case = TRUE)))) { return(party) } } #this is a party helper function that goes and loops through each tweet and checks whether any of the party specific patterns that I mentioned above show in the then
   return("Other")
 }
-tweets <- tweets %>% mutate(party = map_chr(text, detect_party)) %>%filter(party != "Other")   #function to each tweet and add a new parrty column, filter out tweets that have no parties mentioned especially the ones I have mentioned in the code above
-tidy_tweets <- tweets %>%
+tweets <- tweets %>% mutate(party = map_chr(text, detect_party)) %>%filter(party != "Other")   
+tidy_tweets <- tweets %>%    #function to each tweet and add a new parrty column, filter out tweets that have no parties mentioned especially the ones I have mentioned in the code above 
   unnest_tokens(word, text) %>%   #break tweet into indiv words and then remove filler words and numbers, hashtags and punctuations
   anti_join(stop_words, by = "word") %>%
   filter(str_detect(word, "^#?[A-Za-z0-9]+$"))
