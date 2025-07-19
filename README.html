@@ -51,8 +51,8 @@ on grammatical fillers.
 ``` r
 data("stop_words")   #tidytext package list of words, conjunctions, verbs and adverbs which are pretty redundunt in textual analysis. I got senser of this from https://stackoverflow.com/questions/72498240/removing-stop-words-from-text-in-r
 tweet_words <- tweets %>%
-  select(user, date, text) %>%               # I have only selected user, date and text column
-  unnest_tokens(word, text) %>%              # convert the text into a format that is one word per row format for analysis
+  select(user, date, text) %>%      # I have only selected user, date and text column
+  unnest_tokens(word, text) %>%     # convert the text into a format that is one word per row format for analysis (https://juliasilge.github.io/tidytext/reference/unnest_tokens.html)
   filter(str_detect(word, "^#?[A-Za-z0-9]+$"))%>%  
   anti_join(stop_words, by = "word")   #remove out filler words 
 ```
@@ -77,13 +77,13 @@ a sense of who was pushing which messages more aggressively.
 ``` r
 top_words <- tweet_words %>%count(word, sort = TRUE) %>%top_n(17) %>%
   mutate(party_color = case_when(word %in% c("bjp", "narendramodi", "modi") ~ "BJP",word %in% c("rahulgandhi", "incindia", "congress") ~ "INC",
-TRUE ~ "Other"))                                          # words related to bjp and words related inc are grouped together for better visualisation purpose
-                                                          # frequency of words appearing in the word df that i had created initially, I select top 17 words
+TRUE ~ "Other"))    # words related to bjp and words related inc are grouped together for better visualisation purpose
+                    # frequency of words appearing in the word df that i had created initially, I select top 17 words
 ggplot(top_words, aes(x = reorder(word, n), y = n, fill = party_color)) +
   geom_col() +coord_flip() +scale_fill_manual(values = c("BJP" = "orange", "INC" = "lightblue", "Other" = "black")) +
   labs(title = "Most Common Words in Political Tweets (2019)",x = NULL, y = "Frequency", fill = "Party"
   ) +
-  theme_grey()        #plot having all BJP related things in orange and INC related things in blue after comments from instructor meeting
+  theme_grey()  #plot having all BJP related things in orange and INC related things in blue after comments from instructor meeting
 ```
 
 ![](README_files/figure-gfm/frequently%20used%20words-1.png)<!-- -->
@@ -105,7 +105,7 @@ in the tinytext package
 ``` r
 user_tf_idf <- tweet_words %>%  count(user, word) %>%  bind_tf_idf(word, user, n) %>%  arrange(desc(tf_idf))    #numer of times a particular word was used by a user
 top_tf_idf <- user_tf_idf %>%  group_by(user) %>%  slice_max(tf_idf, n = 1) %>%
-  ungroup()               #term frequency score for each word for each user, high tf-df means the word is frequent for particular user but rare for others
+  ungroup()  #term frequency score for each word for each user, high tf-df means the word is frequent for particular user but rare for others
 head(top_tf_idf, 17)
 ```
 
@@ -153,14 +153,14 @@ the campaign, possibly driven by debates, manifesto releases, and
 campaign rallies.
 
 ``` r
-sentiment_words <- tweet_words %>% inner_join(get_sentiments("bing"))      #using bing for sentiment analysis https://www.tidytextmining.com/sentiment, using inner join (referenced from penultimate class lecture or I was getting this wrong)
-sentiment_by_day <- sentiment_words %>% count(date, sentiment) %>% pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>% mutate(net_sentiment = positive - negative)                                    # counting the no of positve and negative words for each date. Formatingdata for each data to have its own positive and negative, fill any missing values with zero such that it will still appear. Add a new sentiment column: sentiment positive if move positive words, sentiment negative if more negative words
+sentiment_words <- tweet_words %>% inner_join(get_sentiments("bing")) #using bing for sentiment analysis https://www.tidytextmining.com/sentiment, using inner join (referenced from penultimate class lecture or I was getting this wrong)
+sentiment_by_day <- sentiment_words %>% count(date, sentiment) %>% pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>% mutate(net_sentiment = positive - negative)    # counting the no of positve and negative words for each date. Formating data for each data to have its own positive and negative, fill any missing values with zero such that it will still appear. Add a new sentiment column: sentiment positive if move positive words, sentiment negative if more negative words
 ggplot(sentiment_by_day, aes(x = date, y = net_sentiment)) + 
   geom_vline(xintercept = as.Date("2019-02-14"), linetype = "dashed", color = "red") + annotate("text", x = as.Date("2019-02-14"), y = 100, label = "Pulwama Attack", angle = 90, vjust = -0.6, size = 3) + geom_vline(xintercept = as.Date("2019-02-26"), linetype = "dashed", color = "red") + annotate("text", x = as.Date("2019-02-26"), y = 100, label = "Balakot Strikes", angle = 90, vjust = -0.6, size = 3) + geom_vline(xintercept = as.Date("2019-03-10"), linetype = "dashed", color = "red") + annotate("text", x = as.Date("2019-03-10"), y = 100, label = "Onset of elections", angle = 90, vjust = -0.6, size = 3) + geom_vline(xintercept = as.Date("2019-05-19"), linetype = "dashed", color = "red") + annotate("text", x = as.Date("2019-05-19"), y = 100, label = "End of polling", angle = 90, vjust = -0.6, size = 3) +
-  geom_line(color = "black") +                                             #these lines are added just to mark important dates with context to indian elections
-  labs(title = "Daily Net Sentiment of Political Tweets",
+geom_line(color = "black") +      # these lines are added just to mark important dates with context to indian elections
+labs(title = "Daily Net Sentiment of Political Tweets",
        x = "Date", y = "Net Sentiment") +
-  theme_grey()
+theme_grey()
 ```
 
 ![](README_files/figure-gfm/sentiment-1.png)<!-- -->
@@ -191,7 +191,7 @@ electoral contests, especially in India’s charged political climate.
 ``` r
 wordcloud_data <- sentiment_words %>% count(word, sentiment, sort = TRUE) #this counts the number of words in sentiment_words dataset grouping them by sentiments and then sorting it 
 wordcloud(words = wordcloud_data$word,   #this code just creates the word cloud, the last line ensures that biggest words appear at the center than being scatter around
- freq = wordcloud_data$n,  min.freq = 30, max.words = 100, colors = c("black", "grey"),random.order = FALSE)
+freq = wordcloud_data$n,  min.freq = 30, max.words = 100, colors = c("black", "grey"),random.order = FALSE)
 ```
 
 ![](README_files/figure-gfm/sentiment%20word%20cloud-1.png)<!-- -->
@@ -231,7 +231,7 @@ detect_party <- function(tweet) { for (party in names(party_patterns)) { if (any
 }
 tweets <- tweets %>% mutate(party = map_chr(text, detect_party)) %>%filter(party != "Other")   #function to each tweet and add a new parrty column, filter out tweets that have no parties mentioned especially the ones I have mentioned in the code above
 tidy_tweets <- tweets %>%
-  unnest_tokens(word, text) %>%                     #break tweet into indiv words and then remove filler words and numbers, hashtags and punctuations
+  unnest_tokens(word, text) %>%   #break tweet into indiv words and then remove filler words and numbers, hashtags and punctuations
   anti_join(stop_words, by = "word") %>%
   filter(str_detect(word, "^#?[A-Za-z0-9]+$"))
              #it includes hashtags words like bjp4india abut excludes some words like #Go_vote, @user, covid-19
@@ -251,7 +251,7 @@ emphasized critique rather than celebration.
 sentiment_bing <- tidy_tweets %>%
   select(word, party) %>%          
   inner_join(bing, by = "word") %>%
-  count(party, sentiment, sort = TRUE)        #joining tidytweets dataset with bing sentient lexicon, labelling words as positive or negative 
+  count(party, sentiment, sort = TRUE)    # joining tidytweets dataset with bing sentient lexicon, labelling words as positive or negative 
 ggplot(sentiment_bing, aes(x = reorder(party, -n), y = n, fill = sentiment)) + geom_col(position = "dodge") +
  labs(title = "Sentiment Word Usage by Party", x = "Party", y = "Word Count", fill = "Sentiment") +
   theme_grey()      #https://ggplot2.tidyverse.org/reference/ggtheme.html
@@ -269,9 +269,9 @@ campaign tactics—BJP projecting confidence and momentum, while the
 opposition appealed to dissatisfaction and a sense of crisis.
 
 ``` r
-emotion_df <- tidy_tweets %>% inner_join(nrc, by = "word") %>% count(party, sentiment) %>% filter(sentiment %in% c("joy", "anger", "fear", "trust", "sadness", "disgust"))                                  #similar to the bing sentiment I create the emotion_df dataframe using tidytweetsa and inner joining by words but using the nrc now https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm
+emotion_df <- tidy_tweets %>% inner_join(nrc, by = "word") %>% count(party, sentiment) %>% filter(sentiment %in% c("joy", "anger", "fear", "trust", "sadness", "disgust"))      #similar to the bing sentiment I create the emotion_df dataframe using tidytweetsa and inner joining by words but using the nrc now https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm
 ggplot(emotion_df, aes(x = reorder(party, -n), y = n, fill = sentiment)) +
-  geom_col(position = "stack") +                                                    #here i have used stack because I wanted the emotions to be stacked upon one another to understand and visualise each sentiment party wise better
+  geom_col(position = "stack") +     #here i have used stack because I wanted the emotions to be stacked upon one another to understand and visualise each sentiment party wise better
   labs(title = "Emotion Distribution Across Parties (NRC Lexicon)",
        x = "Party", y = "Word Count", fill = "Emotion") + scale_y_continuous(labels = comma) +
   theme_grey()                  #https://ggplot2.tidyverse.org/reference/ggtheme.html
@@ -316,3 +316,16 @@ Kaggle was of great help as was stackoverflow. <br>
 6.  <https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm> <br>
 7.  <https://en.wikipedia.org/wiki/2019_Balakot_airstrike> <br>
 8.  <https://en.wikipedia.org/wiki/2019_Pulwama_attack> <br>
+9.  <https://stackoverflow.com/questions/70642322/how-to-use-mutate-function-in-r>
+    <br>
+    10.<https://stackoverflow.com/questions/58216384/issue-with-filtering-within-a-function-in-r>
+    <br>
+    11.<https://stackoverflow.com/questions/60855101/calculate-tf-idf-for-a-data-frame-of-documents>
+    <br>
+    12.<https://stackoverflow.com/questions/72498240/removing-stop-words-from-text-in-r>
+    <br>
+    13.<https://juliasilge.github.io/tidytext/reference/unnest_tokens.html>
+    <br>
+    14.<https://stackoverflow.com/questions/75911170/select-function-in-r>
+10. <https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf>
+    <br>
